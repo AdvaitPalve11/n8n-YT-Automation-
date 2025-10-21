@@ -1,8 +1,10 @@
-# STEM Automation - AI Video Generator# 🎬 YouTube Shorts Math Automation
+# STEM Automation – AI Video Generator
 
+[![Python](https://img.shields.io/badge/Python-3.10%2B-3776AB?logo=python&logoColor=white)](#)
+[![Manim](https://img.shields.io/badge/Manim-Community-1f7a8c?logo=python&logoColor=white)](#)
+[![FastAPI](https://img.shields.io/badge/FastAPI-API%20Server-009688?logo=fastapi&logoColor=white)](#)
 
-
-Automated system for generating educational math videos using AI and Manim.**Automatically generate professional YouTube Shorts from popular math topics!**
+Create short, engaging math videos automatically using Wikipedia + AI scripts + dynamic Manim animations. This project turns a topic into a ~60‑second narrated video with smart keyframes, on‑screen text, and math formulas—no cloud APIs required. Supports batch generation and REST automation.
 
 
 
