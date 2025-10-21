@@ -6,87 +6,49 @@
 
 Create short, engaging math videos automatically using Wikipedia + AI scripts + dynamic Manim animations. This project turns a topic into a ~60‑second narrated video with smart keyframes, on‑screen text, and math formulas—no cloud APIs required. Supports batch generation and REST automation.
 
+## 🚀 Quick Start (Windows)
 
+```powershell
+# Install dependencies
+pip install -r requirements.txt
 
-## Quick Start---
+# Generate one dynamic video
+python generate_bulk.py 1
 
-
-
-```bash## 🚀 Quick Start (60 seconds)
-
-# Start server
-
-python server.py```powershell
-
-# Start the server
-
-# Generate AI prompts and videospython server.py
-
-python scripts/auto_generate_pipeline.py --count 5
-
-# In another terminal, generate a video
-
-# Generate just promptsInvoke-RestMethod -Uri http://127.0.0.1:8000/run-animation -Method POST
-
-python scripts/generate_prompts_hf.py --count 10
-
-```# Done! Video is in: output/final_[topic].mp4
-
+# Or run the API server and trigger a render
+python server.py
+Invoke-RestMethod -Uri http://127.0.0.1:8000/run-animation -Method POST
 ```
 
-## Features
+Videos are saved to `output/videos/` (audio and videos are ignored by git).
 
 ---
 
-- 🤖 **AI Prompt Generation** - Qwen3-4B generates creative video ideas
+## Features
 
-- 🎬 **Automated Video Creation** - Manim renders mathematical animations## 📋 What This Does
+- 🤖 AI topic + script generation (Qwen3-4B via Transformers; Wikipedia fallback)
+- 🎤 Professional TTS with Edge TTS (gTTS fallback)
+- 🎨 Dynamic Manim scenes (intro, key points, formulas, outro)
+- 🧩 Smart text wrapping and audio‑synced timings
+- 📦 No cloud APIs required; optional GPU acceleration
+- ⚙️ REST API + n8n workflows for automation
 
-- 📊 **Batch Processing** - Generate multiple videos at once
+---
 
-- 🎨 **YouTube Shorts Format** - Vertical 1080x1920, 60fpsAutomatically creates **YouTube Shorts** (vertical 9:16, 60fps) by:
+## 🛠️ Installation
 
+Requirements:
+- Python 3.10+
+- Manim Community
+- FFmpeg available in PATH
+- Optional: CUDA GPU for faster model inference
 
-
-## Project Structure1. ✅ Picking a **popular math topic** (Pythagoras, Fibonacci, Pi, etc.)
-
-2. ✅ Generating an **engaging script** with hooks and CTAs  
-
-```3. ✅ Creating **audio narration** from the script
-
-├── scripts/           # Core automation scripts4. ✅ Rendering **vertical animated video** (1080x1920)
-
-├── output/           # Generated content5. ✅ Combining into **ready-to-upload YouTube Short**
-
-├── media/            # Manim cache
-
-├── workflows/        # n8n automation workflows**Time per video**: ~60 seconds
-
-└── docs/             # Documentation
-
-```---
-
-
-
-## Requirements## 🛠️ Installation
-
-
-
-- Python 3.13+```powershell
-
-- PyTorch, Transformers (for AI)# Install dependencies
-
-- Manim Community (for videos)pip install manim pyttsx3 moviepy fastapi uvicorn wikipedia-api
-
-- n8n (optional, for automation)
-
-# Verify Manim
-
-## Documentationmanim --version
-
+```powershell
+pip install -r requirements.txt
+manim --version  # verify Manim install
 ```
 
-See `docs/` folder for detailed guides.
+See `docs/` for detailed guides.
 
 ---
 
