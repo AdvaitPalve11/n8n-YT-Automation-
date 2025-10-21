@@ -1,0 +1,205 @@
+{
+  "name": "Math Video Automation → YouTube",
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "hours",
+              "hoursInterval": 6
+            }
+          ]
+        }
+      },
+      "id": "cron_trigger",
+      "name": "Every 6 Hours",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.1,
+      "position": [
+        240,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "url": "http://host.docker.internal:8000/run-animation",
+        "options": {
+          "timeout": 180000
+        },
+        "method": "POST"
+      },
+      "id": "generate_video",
+      "name": "Generate Math Video",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.1,
+      "position": [
+        460,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "string": [
+            {
+              "value1": "={{$json.status}}",
+              "value2": "success"
+            }
+          ]
+        }
+      },
+      "id": "check_success",
+      "name": "Video Generated?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 1,
+      "position": [
+        680,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "upload",
+        "title": "={{$json.youtube_title}}",
+        "categoryId": "27",
+        "description": "={{$json.youtube_description}}",
+        "privacyStatus": "public",
+        "binaryData": true,
+        "binaryPropertyName": "video",
+        "options": {
+          "tags": "={{$json.youtube_tags}}"
+        }
+      },
+      "id": "youtube_upload",
+      "name": "Upload to YouTube",
+      "type": "n8n-nodes-base.youtube",
+      "typeVersion": 1,
+      "position": [
+        900,
+        200
+      ],
+      "credentials": {
+        "youTubeOAuth2Api": {
+          "id": "1",
+          "name": "YouTube account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "filePath": "={{$json.video_path}}",
+        "options": {}
+      },
+      "id": "read_video_file",
+      "name": "Read Video File",
+      "type": "n8n-nodes-base.readBinaryFile",
+      "typeVersion": 1,
+      "position": [
+        900,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "message": "=✅ Video uploaded to YouTube!\nTopic: {{$json.topic}}\nVideo ID: {{$json.id}}",
+        "options": {}
+      },
+      "id": "success_notification",
+      "name": "Success",
+      "type": "n8n-nodes-base.noOp",
+      "typeVersion": 1,
+      "position": [
+        1120,
+        200
+      ]
+    },
+    {
+      "parameters": {
+        "message": "=❌ Video generation failed!\nError: {{$json.message}}",
+        "options": {}
+      },
+      "id": "error_notification",
+      "name": "Error",
+      "type": "n8n-nodes-base.noOp",
+      "typeVersion": 1,
+      "position": [
+        900,
+        400
+      ]
+    }
+  ],
+  "connections": {
+    "Every 6 Hours": {
+      "main": [
+        [
+          {
+            "node": "Generate Math Video",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Generate Math Video": {
+      "main": [
+        [
+          {
+            "node": "Video Generated?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Video Generated?": {
+      "main": [
+        [
+          {
+            "node": "Read Video File",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Error",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Read Video File": {
+      "main": [
+        [
+          {
+            "node": "Upload to YouTube",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Upload to YouTube": {
+      "main": [
+        [
+          {
+            "node": "Success",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "pinData": {},
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "staticData": null,
+  "tags": [],
+  "triggerCount": 1,
+  "updatedAt": "2025-10-21T00:00:00.000Z",
+  "versionId": "1"
+}

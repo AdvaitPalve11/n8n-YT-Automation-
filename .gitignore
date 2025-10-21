@@ -1,0 +1,46 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+env/
+venv/
+ENV/
+.venv
+
+# Output files (keep JSON for metadata, ignore media)
+output/videos/
+output/**/*.mp4
+output/**/*.wav
+output/**/*.mp3
+output/**/*.aac
+output/audio.*
+media/
+
+# Logs
+*.log
+automation.log
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Temporary files
+temp-audio.m4a
+*.tmp
+
+# Env files
+.env
+.env.*
+
+# n8n
+.n8n/

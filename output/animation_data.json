@@ -1,0 +1,46 @@
+{
+  "keyframes": [
+    {
+      "type": "text",
+      "content": "Let me tell you about List of mathematical constants.",
+      "duration": 3.5,
+      "color": "YELLOW"
+    },
+    {
+      "type": "text",
+      "content": "A mathematical constant is a key number whose value is fixed by an unambiguous definition, often referred to by a symbol (e.g., an alphabet letter), or by mathematicians' names to facilitate using it across multiple mathematical problems.",
+      "duration": 3.5,
+      "color": "BLUE"
+    },
+    {
+      "type": "formula",
+      "content": "List of mathematical constants",
+      "duration": 4.0,
+      "color": "BLUE"
+    },
+    {
+      "type": "text",
+      "content": "For example, the constant \u03c0 may be defined as the ratio of the length of a circle's circumference to its diameter.",
+      "duration": 3.5,
+      "color": "WHITE"
+    },
+    {
+      "type": "text",
+      "content": "The following list includes a decimal expansion and set containing each number, ordered by year of discovery.",
+      "duration": 3.5,
+      "color": "GREEN"
+    },
+    {
+      "type": "text",
+      "content": "The column headings may be clicked to sort the table alphabetically, by decimal value, or by set.",
+      "duration": 3.5,
+      "color": "GOLD"
+    },
+    {
+      "type": "text",
+      "content": "This concept is fundamental to mathematics and continues to fascinate researchers and enthusiasts worldwide.",
+      "duration": 3.5,
+      "color": "RED"
+    }
+  ]
+}

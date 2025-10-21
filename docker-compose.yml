@@ -1,0 +1,46 @@
+version: '3.8'
+
+services:
+  n8n:
+    image: n8nio/n8n:latest
+    container_name: n8n_math_automation
+    restart: unless-stopped
+    ports:
+      - "5678:5678"  # n8n web interface
+    environment:
+      # Basic settings
+      - N8N_BASIC_AUTH_ACTIVE=true
+      - N8N_BASIC_AUTH_USER=admin
+      - N8N_BASIC_AUTH_PASSWORD=admin123
+      
+      # Timezone
+      - GENERIC_TIMEZONE=America/New_York
+      - TZ=America/New_York
+      
+      # Webhook URL (for local testing)
+      - WEBHOOK_URL=http://localhost:5678/
+      
+      # Allow host network access (to call localhost:8000)
+      - N8N_SKIP_WEBHOOK_DEREGISTRATION_SHUTDOWN=true
+      
+    volumes:
+      # Persistent data storage
+      - n8n_data:/home/node/.n8n
+      
+      # Mount output folder for video access
+      - ./output:/output
+      
+    networks:
+      - n8n_network
+    
+    extra_hosts:
+      # Allow container to access host machine
+      - "host.docker.internal:host-gateway"
+
+volumes:
+  n8n_data:
+    driver: local
+
+networks:
+  n8n_network:
+    driver: bridge

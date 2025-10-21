@@ -1,0 +1,29 @@
+# STEM Video Automation - Required Python Packages
+# Install with: pip install -r requirements.txt
+
+# Web Server
+fastapi>=0.115.0
+uvicorn>=0.35.0
+
+# Wikipedia Content
+wikipedia>=1.4.0
+
+# Text-to-Speech (Offline)
+pyttsx3>=2.90
+
+# Video Animation
+manim>=0.19.0
+
+# Video Processing
+moviepy>=2.0.0
+imageio>=2.30.0
+imageio-ffmpeg>=0.6.0
+
+# Utilities
+requests>=2.32.0
+pillow>=9.0.0
+
+# Audio duration + TTS
+mutagen>=1.47.0
+edge-tts>=6.1.12
+gTTS>=2.5.1

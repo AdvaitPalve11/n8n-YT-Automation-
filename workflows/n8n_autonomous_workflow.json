@@ -1,0 +1,227 @@
+{
+  "name": "Autonomous AI Video Generator (Ollama)",
+  "nodes": [
+    {
+      "parameters": {},
+      "id": "cron-trigger-autonomous",
+      "name": "Daily Generation",
+      "type": "n8n-nodes-base.cron",
+      "typeVersion": 1,
+      "position": [240, 300],
+      "webhookId": "autonomous-video-cron",
+      "credentials": {},
+      "disabled": false,
+      "cronExpression": "0 9 * * *"
+    },
+    {
+      "parameters": {
+        "url": "http://host.docker.internal:8000/auto-generate-videos",
+        "method": "POST",
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "count",
+              "value": "20"
+            },
+            {
+              "name": "topic",
+              "value": "mathematics"
+            },
+            {
+              "name": "backend",
+              "value": "manim"
+            },
+            {
+              "name": "enhance_scripts",
+              "value": true
+            }
+          ]
+        },
+        "options": {
+          "timeout": 7200000,
+          "response": {
+            "response": {
+              "fullResponse": true
+            }
+          }
+        }
+      },
+      "id": "autonomous-generation",
+      "name": "Autonomous Generation (Ollama AI)",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.1,
+      "position": [460, 300],
+      "credentials": {},
+      "notes": "Ollama generates prompts + scripts, then creates videos automatically"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "string": [
+            {
+              "value1": "={{$json.body.status}}",
+              "operation": "equals",
+              "value2": "success"
+            }
+          ]
+        }
+      },
+      "id": "check-status-auto",
+      "name": "Check Status",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 1,
+      "position": [680, 300],
+      "notes": "Route based on success or failure"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Extract video information from autonomous generation\nconst response = items[0].json.body;\nconst videos = response.videos || [];\n\n// Create summary\nreturn [{\n  json: {\n    status: \"Autonomous Generation Complete\",\n    total: response.total_videos,\n    successful: response.successful,\n    failed: response.failed,\n    backend: response.backend || 'manim',\n    ollama_used: response.ollama_used,\n    output_dir: response.output_directory,\n    prompts_file: response.prompts_file,\n    video_count: videos.length,\n    timestamp: new Date().toISOString(),\n    sample_videos: videos.slice(0, 5).map(v => `${v.name}_v${v.variation}.mp4`)\n  }\n}];"
+      },
+      "id": "create-summary-auto",
+      "name": "Create Summary",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [900, 200],
+      "notes": "Generate completion summary with stats"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Split videos for individual processing\nconst response = items[0].json.body;\nconst videos = response.videos || [];\n\nreturn videos.map(video => ({\n  json: {\n    name: video.name,\n    variation: video.variation,\n    path: video.path,\n    backend: response.backend,\n    autonomous: true\n  }\n}));"
+      },
+      "id": "split-videos-auto",
+      "name": "Split Videos",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [900, 300],
+      "notes": "Split into individual video items for upload"
+    },
+    {
+      "parameters": {
+        "operation": "upload",
+        "fileId": {
+          "__rl": true,
+          "value": "={{ $json.path }}",
+          "mode": "id"
+        },
+        "driveId": {
+          "__rl": true,
+          "value": "My Drive",
+          "mode": "list",
+          "cachedResultName": "My Drive"
+        },
+        "folderId": {
+          "__rl": true,
+          "value": "n8n workflows",
+          "mode": "list",
+          "cachedResultName": "n8n workflows"
+        },
+        "options": {
+          "fileName": "=AI_{{$json.name}}_v{{$json.variation}}.mp4"
+        }
+      },
+      "id": "upload-to-drive-auto",
+      "name": "Upload to Google Drive (Optional)",
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [1120, 300],
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "google-drive-creds",
+          "name": "Google Drive account"
+        }
+      },
+      "disabled": true,
+      "notes": "Optional: Upload AI-generated videos to Google Drive"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Error handling\nconst response = items[0].json.body;\n\nreturn [{\n  json: {\n    status: \"Autonomous Generation Failed\",\n    error: response.message || \"Unknown error\",\n    details: response.error || \"Check Ollama connection\",\n    timestamp: new Date().toISOString()\n  }\n}];"
+      },
+      "id": "handle-error-auto",
+      "name": "Handle Error",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [900, 400],
+      "notes": "Handle failures and log errors"
+    },
+    {
+      "parameters": {
+        "content": "## 🤖 Autonomous AI Video Generator\n\nThis workflow uses **Ollama AI** to:\n1. Generate creative video prompts\n2. Write engaging scripts\n3. Create videos automatically\n\n**No manual prompt writing needed!**\n\n### Configuration:\n- **Trigger**: Daily at 9 AM\n- **Count**: 20 videos per run\n- **Topic**: Mathematics (customizable)\n- **Backend**: Manim (fast, no GPU)\n\n### Requirements:\n- Ollama running locally\n- Python server on port 8000\n- llama3.2 model installed\n\n### To customize:\n1. Edit \"count\" (10-100 videos)\n2. Change \"topic\" (geometry, calculus, etc.)\n3. Switch \"backend\" (manim/svd/text2video)\n4. Adjust cron schedule\n\n**Zero manual work - fully autonomous!**",
+        "height": 464.79920462713443,
+        "width": 389.3837209302326
+      },
+      "id": "workflow-description",
+      "name": "Workflow Info",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [240, 520]
+    }
+  ],
+  "connections": {
+    "Daily Generation": {
+      "main": [
+        [
+          {
+            "node": "Autonomous Generation (Ollama AI)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Autonomous Generation (Ollama AI)": {
+      "main": [
+        [
+          {
+            "node": "Check Status",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Check Status": {
+      "main": [
+        [
+          {
+            "node": "Create Summary",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Split Videos",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Handle Error",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Split Videos": {
+      "main": [
+        [
+          {
+            "node": "Upload to Google Drive (Optional)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "staticData": null,
+  "tags": [],
+  "triggerCount": 1,
+  "updatedAt": "2025-10-21T00:00:00.000Z",
+  "versionId": "1"
+}
