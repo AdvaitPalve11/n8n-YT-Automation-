@@ -298,5 +298,3 @@ python server.py
 **Your first YouTube Short will be ready in 60 seconds!** 🎉
 
 ---
-
-Made for Math Education & Content Automation
