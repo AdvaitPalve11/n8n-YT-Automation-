@@ -112,7 +112,7 @@ def run_animation():
     """
     start_time = datetime.now()
     logger.info("=" * 80)
-    logger.info("🚀 Starting STEM video generation pipeline...")
+    logger.info("Starting STEM video generation pipeline...")
     logger.info("=" * 80)
     
     try:
@@ -128,7 +128,7 @@ def run_animation():
             capture_output=True,
             text=True
         )
-        logger.info("✅ Topic generated successfully")
+        logger.info("Topic generated successfully")
         
         # Load topic info
         with open("output/topic.json", "r", encoding="utf-8") as f:
@@ -154,7 +154,7 @@ def run_animation():
             capture_output=True,
             text=True
         )
-        logger.info("✅ Script generated successfully")
+        logger.info("Script generated successfully")
 
         # Step 3: Analyze script for entities (countries, people, formulas)
         logger.info("Step 3/7: Analyzing script for entities (countries, people, formulas)...")
@@ -164,7 +164,7 @@ def run_animation():
             capture_output=True,
             text=True
         )
-        logger.info("✅ Script analysis completed")
+        logger.info("Script analysis completed")
 
         # Step 4: Download Wikipedia images
         logger.info("Step 4/7: Downloading Wikipedia images...")
@@ -174,7 +174,7 @@ def run_animation():
             capture_output=True,
             text=True
         )
-        logger.info("✅ Images downloaded")
+        logger.info("Images downloaded")
 
         # Step 5: Generate TTS audio from script
         logger.info("Step 5/7: Generating TTS audio from structured script...")
@@ -184,7 +184,7 @@ def run_animation():
             capture_output=True,
             text=True
         )
-        logger.info("✅ Audio generated successfully")
+        logger.info("Audio generated successfully")
 
         # Step 6: Render DYNAMIC YouTube Shorts animation (vertical 1080x1920, 60fps)
         logger.info("Step 6/7: Rendering DYNAMIC YouTube Shorts animation (vertical 1080x1920, 60fps)...")
@@ -196,7 +196,7 @@ def run_animation():
             text=True,
             cwd=os.getcwd()
         )
-        logger.info("✅ YouTube Shorts animation rendered successfully")
+        logger.info("YouTube Shorts animation rendered successfully")
 
         # Step 7: Combine video + audio
         logger.info("Step 7/7: Combining video and audio...")
@@ -206,7 +206,7 @@ def run_animation():
             capture_output=True,
             text=True
         )
-        logger.info("✅ Final video created successfully")
+        logger.info("Final video created successfully")
         
         # Get final video path
         final_videos = list(output_dir.glob("final_*.mp4"))
@@ -223,18 +223,18 @@ def run_animation():
         duration = (end_time - start_time).total_seconds()
         
         logger.info("=" * 80)
-        logger.info(f"✅ PIPELINE COMPLETED SUCCESSFULLY in {duration:.1f} seconds")
-        logger.info(f"📹 Final video: {video_path}")
-        logger.info(f"📊 File size: {file_size:.2f} MB")
+        logger.info(f"PIPELINE COMPLETED SUCCESSFULLY in {duration:.1f} seconds")
+        logger.info(f"Final video: {video_path}")
+        logger.info(f"File size: {file_size:.2f} MB")
         logger.info("=" * 80)
         
         # Prepare YouTube metadata
-        youtube_title = f"{topic} Explained! 🔢 #Shorts"
+        youtube_title = f"{topic} Explained! #Shorts"
         youtube_description = f"""Learn about {topic} in 30 seconds!
 
-📚 {category}
-🎓 Perfect for quick math learning
-💡 Subscribe for daily math shorts!
+Category: {category}
+Perfect for quick math learning
+Subscribe for daily math shorts!
 
 #Shorts #Mathematics #Math #STEM #Education #{topic.replace(' ', '')}"""
         
@@ -259,7 +259,7 @@ def run_animation():
         )
         
     except subprocess.CalledProcessError as e:
-        logger.error(f"❌ Pipeline failed at subprocess: {str(e)}")
+        logger.error(f"Pipeline failed at subprocess: {str(e)}")
         logger.error(f"Command output: {e.output if hasattr(e, 'output') else 'N/A'}")
         logger.error(f"Command stderr: {e.stderr if hasattr(e, 'stderr') else 'N/A'}")
         
@@ -274,7 +274,7 @@ def run_animation():
         )
     
     except Exception as e:
-        logger.error(f"❌ Unexpected error: {str(e)}")
+        logger.error(f"Unexpected error: {str(e)}")
         
         raise HTTPException(
             status_code=500,
@@ -309,12 +309,12 @@ async def auto_generate_videos_endpoint(
     from pathlib import Path
     
     logger.info("\n" + "="*60)
-    logger.info("🤖 AUTONOMOUS VIDEO GENERATION STARTED")
+    logger.info("AUTONOMOUS VIDEO GENERATION STARTED")
     logger.info("="*60)
-    logger.info(f"📊 Count: {count} videos")
-    logger.info(f"📚 Topic: {topic}")
-    logger.info(f"🎨 Backend: {backend}")
-    logger.info(f"✨ Enhanced scripts: {enhance_scripts}")
+    logger.info(f"Count: {count} videos")
+    logger.info(f"Topic: {topic}")
+    logger.info(f"Backend: {backend}")
+    logger.info(f"Enhanced scripts: {enhance_scripts}")
     logger.info("="*60 + "\n")
     
     try:
@@ -380,7 +380,7 @@ async def auto_generate_videos_endpoint(
             }
         )
     except Exception as e:
-        logger.error(f"❌ Error in autonomous generation: {e}")
+        logger.error(f"Error in autonomous generation: {e}")
         import traceback
         traceback.print_exc()
         
@@ -596,11 +596,11 @@ async def generate_bulk_videos_endpoint(
     from pathlib import Path
     
     logger.info("\n" + "="*60)
-    logger.info("🎬 BULK VIDEO GENERATION STARTED")
+    logger.info("BULK VIDEO GENERATION STARTED")
     logger.info("="*60)
-    logger.info(f"📋 CSV: {csv_path}")
-    logger.info(f"🎨 Backend: {backend}")
-    logger.info(f"⏱️  Duration: {duration}s")
+    logger.info(f"CSV: {csv_path}")
+    logger.info(f"Backend: {backend}")
+    logger.info(f"Duration: {duration}s")
     logger.info("="*60 + "\n")
     
     try:
@@ -663,14 +663,14 @@ if __name__ == "__main__":
     os.makedirs("output/bulk_videos", exist_ok=True)
     
     logger.info("=" * 80)
-    logger.info("🎬 STEM Video Automation Server Starting...")
+    logger.info("STEM Video Automation Server Starting...")
     logger.info("=" * 80)
     logger.info("Server: http://127.0.0.1:8000")
     logger.info("Docs: http://127.0.0.1:8000/docs")
     logger.info("Health Check: http://127.0.0.1:8000/")
     logger.info("Run Animation: POST http://127.0.0.1:8000/run-animation")
     logger.info("Bulk Videos: POST http://127.0.0.1:8000/generate-bulk-videos")
-    logger.info("🤖 AUTONOMOUS: POST http://127.0.0.1:8000/auto-generate-videos")
+    logger.info("AUTONOMOUS: POST http://127.0.0.1:8000/auto-generate-videos")
     logger.info("=" * 80)
     
     # Run the server

@@ -122,7 +122,7 @@ def main() -> int:
     out_dir.mkdir(exist_ok=True, parents=True)
 
     logging.info("=" * 80)
-    logging.info("🚀 Starting STEM video generation pipeline (script)")
+    logging.info("Starting STEM video generation pipeline (script)")
     logging.info("=" * 80)
 
     # Step 1: Generate topic
@@ -177,8 +177,8 @@ def main() -> int:
     }
 
     logging.info("=" * 80)
-    logging.info(f"📹 Final video: {summary['video_path']}")
-    logging.info(f"📊 Size: {summary['file_size_mb']} MB | ⏱️  {summary['duration_seconds']}s")
+    logging.info(f"Final video: {summary['video_path']}")
+    logging.info(f"Size: {summary['file_size_mb']} MB | {summary['duration_seconds']}s")
     logging.info("=" * 80)
 
     # Also print JSON summary to stdout for automation

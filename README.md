@@ -6,7 +6,7 @@
 
 Create short, engaging math videos automatically using Wikipedia + AI scripts + dynamic Manim animations. This project turns a topic into a ~60‑second narrated video with smart keyframes, on‑screen text, and math formulas—no cloud APIs required. Supports batch generation and REST automation.
 
-## 🚀 Quick Start (Windows)
+## Quick Start (Windows)
 
 ```powershell
 # 1) Install dependencies
@@ -33,16 +33,16 @@ Videos are saved to `output/videos/` (audio and videos are ignored by git).
 
 ## Features
 
-- 🤖 AI topic + script generation (Qwen3-4B via Transformers; Wikipedia fallback)
-- 🎤 Professional TTS with Edge TTS (gTTS fallback)
-- 🎨 Dynamic Manim scenes (intro, key points, formulas, outro)
-- 🧩 Smart text wrapping and audio‑synced timings
-- 📦 No cloud APIs required; optional GPU acceleration
-- ⚙️ REST API + n8n workflows for automation
+- AI topic + script generation (Qwen3-4B via Transformers; Wikipedia fallback)
+- Professional TTS with Edge TTS (gTTS fallback)
+- Dynamic Manim scenes (intro, key points, formulas, outro)
+- Smart text wrapping and audio‑synced timings
+- No cloud APIs required; optional GPU acceleration
+- REST API + n8n workflows for automation
 
 ---
 
-## 🛠️ Installation
+## Installation
 
 Requirements:
 - Python 3.10+
@@ -59,7 +59,7 @@ See `docs/` for detailed guides.
 
 ---
 
-## 📁 Project Structure
+## Project Structure
 
 ```
 STEM_Automation/
@@ -74,12 +74,12 @@ STEM_Automation/
     ├── topic.json                 # Topic data
     ├── script.json                # Script
     ├── audio.wav                  # Audio
-    └── final_[topic].mp4          # Final video ✅
+  └── final_[topic].mp4          # Final video
 ```
 
 ---
 
-## 🎯 Usage
+## Usage
 
 ### Mode 1: Single Video (YouTube Shorts) ⚡
 
@@ -98,7 +98,7 @@ manim -qh --format=mp4 --fps=60 --resolution 1080,1920 scripts/render_manim_shor
 python scripts/combine_video.py
 ```
 
-### Mode 2: Bulk Videos (NEW! 🎬)
+### Mode 2: Bulk Videos (NEW)
 
 **Local AI - No Cloud APIs!**
 
@@ -124,7 +124,7 @@ Invoke-RestMethod -Uri http://127.0.0.1:8000/generate-bulk-videos -Method POST
 
 ---
 
-## 📊 Example Output
+## Example Output
 
 **Topic**: "Fibonacci Sequence"
 
@@ -139,7 +139,7 @@ Invoke-RestMethod -Uri http://127.0.0.1:8000/generate-bulk-videos -Method POST
 - Frame rate: 60fps
 - Duration: 30-45 seconds
 - Size: 2-4MB
-- **Ready to upload!** ✅
+- Ready to upload.
 
 ---
 
@@ -155,11 +155,11 @@ Invoke-RestMethod -Uri http://127.0.0.1:8000/generate-bulk-videos -Method POST
 
 ---
 
-## 📤 Upload to YouTube
+## Upload to YouTube
 
 1. Go to YouTube Studio
 2. Upload `output/final_[topic].mp4`
-3. Title: "[Topic] Explained! 🔢 #Shorts"
+3. Title: "[Topic] Explained! #Shorts"
 4. Add hashtags: #Shorts #Math #STEM
 5. Publish!
 
@@ -167,7 +167,7 @@ Invoke-RestMethod -Uri http://127.0.0.1:8000/generate-bulk-videos -Method POST
 
 ---
 
-## 🎬 Customization
+## Customization
 
 ### Change Topics
 Edit `scripts/generate_prompt.py`:
@@ -189,7 +189,7 @@ ctas = [
 
 ---
 
-## 🐛 Troubleshooting
+## Troubleshooting
 
 **Video not generating?**
 ```powershell
@@ -208,7 +208,7 @@ manim -qh --resolution 1080,1920 scripts/render_manim_shorts.py STEMScene
 
 ---
 
-## 🏆 Success Metrics
+## Success Metrics
 
 Track in YouTube Analytics:
 - **Views**: 1K+ per short
@@ -218,7 +218,7 @@ Track in YouTube Analytics:
 
 ---
 
-## 📞 API Endpoints
+## API Endpoints
 
 ### Status Check
 ```powershell
@@ -248,7 +248,7 @@ Invoke-RestMethod -Uri http://127.0.0.1:8000/scripts/generate -Method POST -Body
 } | ConvertTo-Json) -ContentType "application/json"
 ```
 
-### Generate Bulk Videos (NEW!)
+### Generate Bulk Videos (NEW)
 ```powershell
 Invoke-RestMethod -Uri http://127.0.0.1:8000/generate-bulk-videos -Method POST -Body (@{
     csv_path = "prompts.csv"
@@ -278,7 +278,7 @@ Invoke-RestMethod -Uri http://127.0.0.1:8000/auto-generate-videos -Method POST -
 
 ---
 
-## 💡 Pro Tips
+## Pro Tips
 
 1. **Batch generate** 50 videos, schedule uploads
 2. **Track analytics** - focus on best-performing topics
@@ -289,7 +289,7 @@ Invoke-RestMethod -Uri http://127.0.0.1:8000/auto-generate-videos -Method POST -
 
 ---
 
-## 🚀 Start Creating!
+## Start Creating
 
 ```powershell
 python server.py
@@ -299,4 +299,4 @@ python server.py
 
 ---
 
-**Made with ❤️ for Math Education & Content Automation**
+Made for Math Education & Content Automation
