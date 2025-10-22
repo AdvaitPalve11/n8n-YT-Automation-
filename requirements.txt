@@ -27,3 +27,6 @@ pillow>=9.0.0
 mutagen>=1.47.0
 edge-tts>=6.1.12
 gTTS>=2.5.1
+
+# Feeds and sources (free)
+feedparser>=6.0.11

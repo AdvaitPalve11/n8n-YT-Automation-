@@ -5,7 +5,8 @@ Endpoint: POST /run-animation - Triggers the full automation workflow
 Server: Runs on http://127.0.0.1:8000
 """
 
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI, HTTPException, Query
+from pydantic import BaseModel
 from fastapi.responses import JSONResponse
 import subprocess
 import uvicorn
@@ -14,6 +15,18 @@ import logging
 import json
 from pathlib import Path
 from datetime import datetime
+import requests
+
+# Optional imports guarded at runtime
+try:
+    import wikipedia  # Wikipedia topic/source
+except Exception:
+    wikipedia = None
+
+try:
+    import feedparser  # arXiv Atom feeds
+except Exception:
+    feedparser = None
 
 # Configure logging
 logging.basicConfig(
@@ -44,7 +57,9 @@ def read_root():
         "endpoints": {
             "health": "/",
             "run_animation": "/run-animation (POST)",
-            "status": "/status"
+            "status": "/status",
+            "topics_suggest": "/topics/suggest",
+            "scripts_generate": "/scripts/generate"
         }
     }
 
@@ -368,6 +383,186 @@ async def auto_generate_videos_endpoint(
             }
         )
 
+
+# -----------------------------
+# Free Topic Suggestion APIs
+# -----------------------------
+
+def suggest_topics_wikipedia(query: str, limit: int = 10):
+    if wikipedia is None:
+        raise RuntimeError("wikipedia package not installed. pip install wikipedia")
+    wikipedia.set_lang("en")
+    titles = wikipedia.search(query or "mathematics", results=limit)
+    items = []
+    for t in titles:
+        try:
+            page = wikipedia.page(t, auto_suggest=True)
+            items.append({
+                "title": page.title,
+                "url": page.url,
+                "summary": wikipedia.summary(page.title, sentences=2)
+            })
+        except Exception:
+            items.append({
+                "title": t,
+                "url": f"https://en.wikipedia.org/wiki/{t.replace(' ', '_')}",
+                "summary": ""
+            })
+    return items
+
+
+def suggest_topics_arxiv(category: str = "math", limit: int = 10):
+    if feedparser is None:
+        raise RuntimeError("feedparser not installed. pip install feedparser")
+    # arXiv API (no key): recent submissions in category
+    url = (
+        f"http://export.arxiv.org/api/query?search_query=cat:{category}"
+        f"&start=0&max_results={limit}&sortBy=submittedDate&sortOrder=descending"
+    )
+    feed = feedparser.parse(url)
+    items = []
+    for e in feed.entries:
+        items.append({
+            "title": e.title.strip(),
+            "url": e.link,
+            "summary": getattr(e, "summary", "").strip()
+        })
+    return items
+
+
+@app.get("/topics/suggest")
+def topics_suggest(
+    source: str = Query("wikipedia", regex="^(wikipedia|arxiv)$"),
+    query: str = "mathematics",
+    limit: int = Query(10, ge=1, le=50),
+    arxiv_category: str = "math"
+):
+    """Suggest topics from free sources.
+
+    - source=wikipedia: uses the Wikipedia search API (no key)
+    - source=arxiv: recent papers in a category (no key)
+    """
+    try:
+        if source == "wikipedia":
+            items = suggest_topics_wikipedia(query, limit)
+        else:
+            items = suggest_topics_arxiv(arxiv_category, limit)
+
+        return {"status": "success", "source": source, "total": len(items), "items": items}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail={"status": "error", "source": source, "message": str(e)})
+
+
+# -----------------------------
+# Free Script Generation API
+# -----------------------------
+
+class ScriptRequest(BaseModel):
+    topic: str
+    provider: str | None = None  # "ollama" | "transformers" | "wikipedia"
+    model: str | None = None     # e.g., "llama3.1", or HF id
+    max_words: int = 150
+
+
+def fetch_wikipedia_summary(topic: str) -> str:
+    if wikipedia is None:
+        return topic
+    try:
+        wikipedia.set_lang("en")
+        return wikipedia.summary(topic, sentences=5)
+    except Exception:
+        return topic
+
+
+def try_ollama_generate(topic: str, context: str, model: str | None, max_words: int) -> str | None:
+    # Check Ollama locally (no key). If not running, return None
+    try:
+        tags = requests.get("http://127.0.0.1:11434/api/tags", timeout=1)
+        if tags.status_code != 200:
+            return None
+    except Exception:
+        return None
+
+    payload = {
+        "model": model or "llama3.1",
+        "prompt": (
+            f"Write an engaging ~{max_words}-word educational script about {topic}.\n\n"
+            f"Context: {context[:800]}\n\n"
+            "Rules:\n- Hook first\n- Simple language\n- Clear flow\n- No markdown, plain text\n"
+        ),
+        "stream": False,
+        "options": {"temperature": 0.7}
+    }
+    try:
+        r = requests.post("http://127.0.0.1:11434/api/generate", json=payload, timeout=60)
+        if r.status_code == 200:
+            data = r.json()
+            # Ollama response: { response: "..." }
+            return (data.get("response") or "").strip()
+    except Exception:
+        return None
+    return None
+
+
+def try_transformers_generate(topic: str, context: str, model_name: str | None, max_words: int) -> str | None:
+    try:
+        import torch
+        from transformers import AutoTokenizer, AutoModelForCausalLM
+        device = "cuda" if torch.cuda.is_available() else "cpu"
+        model_id = model_name or "Qwen/Qwen2.5-1.8B-Instruct"
+        tokenizer = AutoTokenizer.from_pretrained(model_id)
+        model = AutoModelForCausalLM.from_pretrained(model_id, torch_dtype=torch.float16 if device=="cuda" else torch.float32, device_map="auto" if device=="cuda" else None)
+        prompt = (
+            f"Write an engaging ~{max_words}-word educational script about {topic}.\n\n"
+            f"Context: {context[:800]}\n\n"
+            "Rules:\n- Hook first\n- Simple language\n- Clear flow\n- No markdown, plain text\n"
+        )
+        inputs = tokenizer(prompt, return_tensors="pt")
+        if device == "cuda":
+            inputs = {k: v.to(device) for k, v in inputs.items()}
+        out = model.generate(**inputs, max_new_tokens=max(120, int(max_words*2)), temperature=0.7, top_p=0.9, do_sample=True, pad_token_id=tokenizer.eos_token_id)
+        text = tokenizer.decode(out[0], skip_special_tokens=True)
+        # Remove prompt prefix if it echoes
+        return text.replace(prompt, "").strip()
+    except Exception:
+        return None
+
+
+@app.post("/scripts/generate")
+def scripts_generate(req: ScriptRequest):
+    """Generate a short script with free providers and fallbacks (no paid APIs).
+
+    Priority: provider (if set) -> Ollama (if running) -> Transformers (if installed) -> Wikipedia-only fallback.
+    """
+    topic = req.topic.strip()
+    if not topic:
+        raise HTTPException(status_code=400, detail={"status": "error", "message": "topic is required"})
+
+    wiki_text = fetch_wikipedia_summary(topic)
+
+    text: str | None = None
+    if req.provider == "ollama":
+        text = try_ollama_generate(topic, wiki_text, req.model, req.max_words)
+    elif req.provider == "transformers":
+        text = try_transformers_generate(topic, wiki_text, req.model, req.max_words)
+    else:
+        # Auto: try Ollama then Transformers
+        text = try_ollama_generate(topic, wiki_text, req.model, req.max_words)
+        if not text:
+            text = try_transformers_generate(topic, wiki_text, req.model, req.max_words)
+
+    if not text:
+        # Wikipedia-only fallback (free, no models)
+        sentences = (wiki_text or f"About {topic}.").split('. ')
+        body = '. '.join(sentences[:3]).strip()
+        text = (
+            f"Let’s talk about {topic}. {body}. "
+            f"This concept shows up across math and science. Understanding {topic} helps build strong intuition."
+        )
+        text = ' '.join(text.split())
+
+    words = len(text.split())
+    return {"status": "success", "topic": topic, "word_count": words, "script": text}
 
 @app.post("/generate-bulk-videos")
 async def generate_bulk_videos_endpoint(
