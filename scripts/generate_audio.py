@@ -80,7 +80,7 @@ def generate_tts_audio():
             raise FileNotFoundError(f"Failed to create audio file: {output_file}")
         
         file_size = output_file.stat().st_size
-        logger.info(f"✅ Audio generated successfully: {output_file} ({file_size} bytes)")
+        logger.info(f"Audio generated successfully: {output_file} ({file_size} bytes)")
         
         return str(output_file)
         
@@ -91,8 +91,8 @@ def generate_tts_audio():
 if __name__ == "__main__":
     try:
         audio_path = generate_tts_audio()
-        print(f"\n✅ Successfully generated TTS audio:")
+        print("\nTTS audio generated")
         print(f"Audio file: {audio_path}")
     except Exception as e:
-        print(f"\n❌ Error: {str(e)}")
+        print(f"\nError: {str(e)}")
         exit(1)

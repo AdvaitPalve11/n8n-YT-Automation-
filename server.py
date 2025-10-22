@@ -190,7 +190,7 @@ def run_animation():
         logger.info("Step 6/7: Rendering DYNAMIC YouTube Shorts animation (vertical 1080x1920, 60fps)...")
         logger.info("This will create intelligent, content-aware animations...")
         result = subprocess.run(
-            ["manim", "-qh", "--format=mp4", "--fps=60", "--resolution", "1080,1920", "scripts\\render_manim_dynamic.py", "STEMScene"],
+            ["manim", "-qh", "--format=mp4", "--fps=60", "--resolution", "1080,1920", "scripts\\render_manim_dynamic.py", "DynamicScene"],
             check=True,
             capture_output=True,
             text=True,

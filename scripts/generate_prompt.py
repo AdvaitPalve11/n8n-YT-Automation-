@@ -146,10 +146,10 @@ def generate_stem_prompt():
 if __name__ == "__main__":
     try:
         result = generate_stem_prompt()
-        print(f"\n✅ Successfully generated YouTube Shorts topic:")
+        print("\nSuccessfully generated YouTube Shorts topic:")
         print(f"Topic: {result['topic']}")
         print(f"Category: {result['category']}")
-        print(f"Explanation: {result['explanation']}")
+        print("Explanation saved to output/topic.json")
     except Exception as e:
-        print(f"\n❌ Error: {str(e)}")
+        print(f"\nError: {str(e)}")
         exit(1)

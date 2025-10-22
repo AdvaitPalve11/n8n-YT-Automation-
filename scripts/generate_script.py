@@ -172,12 +172,12 @@ def generate_educational_script():
         output_file = Path("output/script.json")
         with open(output_file, "w", encoding="utf-8") as f:
             json.dump(script_data, f, indent=2, ensure_ascii=False)
-        
-        logger.info(f"✅ Script generated successfully: {output_file}")
+
+        logger.info(f"Script generated successfully: {output_file}")
         logger.info(f"Word count: {script_data['metadata']['word_count']}")
         logger.info(f"Estimated duration: {script_data['metadata']['estimated_duration_seconds']:.1f} seconds")
         logger.info(f"Hook: {script['hook']}")
-        
+
         return script_data
         
     except Exception as e:
@@ -187,18 +187,13 @@ def generate_educational_script():
 if __name__ == "__main__":
     try:
         result = generate_educational_script()
-        
-        print(f"\n📝 Educational Script Generated:")
-        print(f"\n🎯 Topic: {result['topic']}")
-        print(f"📚 Category: {result['category']}")
-        print(f"\n🎬 SCRIPT:")
-        print(f"\n[HOOK] {result['script']['hook']}")
-        print(f"\n[POINT 1] {result['script']['main_point_1']}")
-        print(f"\n[POINT 2] {result['script']['main_point_2']}")
-        print(f"\n[CTA] {result['script']['closing']}")
-        print(f"\n📊 Duration: ~{result['metadata']['estimated_duration_seconds']:.0f} seconds")
-        print(f"💬 Words: {result['metadata']['word_count']}")
-        
+        # Print a minimal, ASCII-only summary to avoid Unicode/emoji issues on Windows consoles
+        print("\nEducational Script Generated")
+        print(f"Topic: {result['topic']}")
+        print(f"Category: {result['category']}")
+        print("Script saved to: output/script.json")
+        print(f"Estimated duration (sec): {int(result['metadata']['estimated_duration_seconds'])}")
+        print(f"Word count: {result['metadata']['word_count']}")
     except Exception as e:
-        print(f"\n❌ Error: {str(e)}")
+        print(f"\nError: {str(e)}")
         exit(1)

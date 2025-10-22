@@ -90,10 +90,43 @@ def main() -> int:
         print(f"Ollama request failed: {e}")
         return 2
 
+    # Build structured output compatible with generate_audio.py expectations
+    # Try to carry category forward if present
+    category = "Mathematics"
+    topic_meta = Path("output/topic.json")
+    if topic_meta.exists():
+        try:
+            with topic_meta.open("r", encoding="utf-8") as tf:
+                tdata = json.load(tf)
+                category = tdata.get("category", category)
+        except Exception:
+            pass
+
+    script_struct = {
+        "hook": f"Let's talk about {topic}.",
+        "main_point_1": "",
+        "main_point_2": "",
+        "closing": "",
+        "full_text": text,
+        "estimated_duration": max(30, int(len(text.split()) * 0.5)),
+    }
+
+    script_data = {
+        "topic": topic,
+        "category": category,
+        "script": script_struct,
+        "metadata": {
+            "word_count": len(text.split()),
+            "estimated_duration_seconds": script_struct["estimated_duration"],
+            "source": "ollama",
+            "model": model,
+        },
+    }
+
     out = Path("output")
     out.mkdir(exist_ok=True)
     with (out / "script.json").open("w", encoding="utf-8") as f:
-        json.dump({"script": text}, f, ensure_ascii=False, indent=2)
+        json.dump(script_data, f, ensure_ascii=False, indent=2)
 
     print(f"Script generated with {model} ({len(text.split())} words)")
     return 0

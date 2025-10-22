@@ -28,7 +28,7 @@ def sanitize_filename(filename):
 def download_image(url, save_path):
     """Download an image from URL"""
     try:
-        logger.info(f"📥 Downloading: {url}")
+        logger.info(f"Downloading: {url}")
         
         response = requests.get(url, timeout=10, stream=True)
         response.raise_for_status()
@@ -39,11 +39,11 @@ def download_image(url, save_path):
                 f.write(chunk)
         
         file_size = save_path.stat().st_size / 1024  # KB
-        logger.info(f"✅ Downloaded: {save_path.name} ({file_size:.1f} KB)")
+        logger.info(f"Downloaded: {save_path.name} ({file_size:.1f} KB)")
         return True
         
     except Exception as e:
-        logger.error(f"❌ Failed to download {url}: {e}")
+        logger.error(f"Failed to download {url}: {e}")
         return False
 
 def download_all_images():
@@ -53,8 +53,8 @@ def download_all_images():
         entities_file = Path("output/entities.json")
         
         if not entities_file.exists():
-            logger.error(f"❌ Entities file not found: {entities_file}")
-            logger.error("⚠️  Run analyze_script.py first!")
+            logger.error(f"Entities file not found: {entities_file}")
+            logger.error("Run analyze_script.py first")
             return
         
         with open(entities_file, "r", encoding="utf-8") as f:
@@ -63,15 +63,15 @@ def download_all_images():
         images = entities.get("images", {})
         
         if not images:
-            logger.warning("⚠️  No images to download")
+            logger.warning("No images to download")
             return
         
         # Create images directory
         images_dir = Path("output/images")
         images_dir.mkdir(exist_ok=True, parents=True)
         
-        logger.info(f"📁 Images directory: {images_dir}")
-        logger.info(f"🖼️  Images to download: {len(images)}")
+        logger.info(f"Images directory: {images_dir}")
+        logger.info(f"Images to download: {len(images)}")
         
         # Download each image
         downloaded = {}
@@ -96,27 +96,24 @@ def download_all_images():
         with open(entities_file, "w", encoding="utf-8") as f:
             json.dump(entities, f, indent=2, ensure_ascii=False)
         
-        logger.info(f"✅ Downloaded {len(downloaded)}/{len(images)} images")
-        logger.info(f"📝 Updated: {entities_file}")
+        logger.info(f"Downloaded {len(downloaded)}/{len(images)} images")
+        logger.info(f"Updated: {entities_file}")
         
         return downloaded
         
     except Exception as e:
-        logger.error(f"❌ Error downloading images: {e}")
+        logger.error(f"Error downloading images: {e}")
         raise
 
 if __name__ == "__main__":
     try:
         result = download_all_images()
-        
+        # ASCII-only minimal console output
         if result:
-            print(f"\n✅ IMAGE DOWNLOAD COMPLETE")
-            print(f"\n📸 Downloaded {len(result)} images:")
-            for name, path in result.items():
-                print(f"  • {name}: {Path(path).name}")
+            print("\nImage download complete")
+            print(f"Downloaded {len(result)} images")
         else:
-            print("\n⚠️  No images downloaded")
-        
+            print("\nNo images downloaded")
     except Exception as e:
         logger.error(f"Failed to download images: {e}")
         exit(1)

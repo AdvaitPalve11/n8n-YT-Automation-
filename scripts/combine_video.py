@@ -43,6 +43,14 @@ def combine_video_audio():
         video_folder_shorts = r"media\videos\render_manim_shorts\1080p60"  # New vertical format
         video_folder_1080p60 = r"media\videos\render_manim\1080p60"  # Old horizontal format (fallback)
         possible_video_paths = [
+            # Dynamic renderer (this project’s default)
+            Path("media/videos/render_manim_dynamic/1280p60/DynamicScene.mp4"),
+            Path("media/videos/render_manim_dynamic/1280p30/DynamicScene.mp4"),
+            Path("media/videos/render_manim_dynamic/1080p60/DynamicScene.mp4"),
+            Path("media/videos/render_manim_dynamic/1080p30/DynamicScene.mp4"),
+            Path("media/videos/render_manim_dynamic/720p30/DynamicScene.mp4"),
+            Path("media/videos/render_manim_dynamic/480p15/DynamicScene.mp4"),
+            # Shorts and legacy renderers
             Path("media/videos/render_manim_shorts/1080p60/STEMScene.mp4"),  # YouTube Shorts (vertical)
             Path("media/videos/render_manim/1080p60/STEMScene.mp4"),  # High quality (1080p 60fps)
             Path("media/videos/render_manim/1080p30/STEMScene.mp4"),  # High quality (1080p 30fps)
@@ -138,7 +146,7 @@ def combine_video_audio():
             raise FileNotFoundError(f"Failed to create final video: {output_file}")
         
         file_size = output_file.stat().st_size / (1024 * 1024)  # Convert to MB
-        logger.info(f"✅ Final video created successfully!")
+        logger.info("Final video created successfully")
         logger.info(f"File: {output_file}")
         logger.info(f"Size: {file_size:.2f} MB")
         logger.info(f"Duration: {audio_duration:.2f} seconds")
@@ -152,9 +160,9 @@ def combine_video_audio():
 if __name__ == "__main__":
     try:
         final_video = combine_video_audio()
-        print(f"\n✅ Successfully created final video:")
+        print("\nFinal video created")
         print(f"Video file: {final_video}")
-        print(f"\nReady for upload to YouTube!")
+        print("Ready for upload to YouTube")
     except Exception as e:
-        print(f"\n❌ Error: {str(e)}")
+        print(f"\nError: {str(e)}")
         exit(1)

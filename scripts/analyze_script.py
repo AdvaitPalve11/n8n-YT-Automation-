@@ -161,10 +161,10 @@ def analyze_script():
         script_file = Path("output/script.json")
         
         if not script_file.exists():
-            logger.error(f"❌ Script file not found: {script_file}")
+            logger.error(f"Script file not found: {script_file}")
             return
         
-        logger.info(f"📖 Analyzing script: {script_file}")
+        logger.info(f"Analyzing script: {script_file}")
         
         with open(script_file, "r", encoding="utf-8") as f:
             script_data = json.load(f)
@@ -172,7 +172,7 @@ def analyze_script():
         topic = script_data.get("topic", "")
         full_text = script_data.get("script", {}).get("full_text", "")
         
-        logger.info(f"🔍 Extracting entities from: {topic}")
+        logger.info("Extracting entities from script text")
         
         # Extract entities
         countries = extract_countries(full_text)
@@ -180,17 +180,17 @@ def analyze_script():
         formulas = extract_formulas(full_text)
         concepts = extract_concepts(topic, full_text)
         
-        logger.info(f"✅ Found {len(countries)} countries")
-        logger.info(f"✅ Found {len(mathematicians)} mathematicians")
-        logger.info(f"✅ Found {len(formulas)} formulas")
-        logger.info(f"✅ Found {len(concepts)} concepts")
+        logger.info(f"Found {len(countries)} countries")
+        logger.info(f"Found {len(mathematicians)} mathematicians")
+        logger.info(f"Found {len(formulas)} formulas")
+        logger.info(f"Found {len(concepts)} concepts")
         
         # Search for images
         entity_images = {}
         
         # Country flags
         for country in countries:
-            logger.info(f"🔍 Searching Wikipedia for {country} flag...")
+            logger.info(f"Searching Wikipedia for {country} flag...")
             image_url = search_wikipedia_image(f"Flag of {country}")
             if image_url:
                 entity_images[country] = {
@@ -198,11 +198,11 @@ def analyze_script():
                     "url": image_url,
                     "name": country
                 }
-                logger.info(f"✅ Found flag: {country}")
+                logger.info(f"Found flag: {country}")
         
         # Mathematician portraits
         for mathematician in mathematicians:
-            logger.info(f"🔍 Searching Wikipedia for {mathematician} portrait...")
+            logger.info(f"Searching Wikipedia for {mathematician} portrait...")
             image_url = search_wikipedia_image(mathematician)
             if image_url:
                 entity_images[mathematician] = {
@@ -210,7 +210,7 @@ def analyze_script():
                     "url": image_url,
                     "name": mathematician
                 }
-                logger.info(f"✅ Found portrait: {mathematician}")
+                logger.info(f"Found portrait: {mathematician}")
         
         # Create entities data
         entities = {
@@ -228,34 +228,23 @@ def analyze_script():
         with open(entities_file, "w", encoding="utf-8") as f:
             json.dump(entities, f, indent=2, ensure_ascii=False)
         
-        logger.info(f"✅ Entities saved: {entities_file}")
-        logger.info(f"📊 Total images found: {len(entity_images)}")
+        logger.info(f"Entities saved: {entities_file}")
+        logger.info(f"Total images found: {len(entity_images)}")
         
         return entities
         
     except Exception as e:
-        logger.error(f"❌ Error analyzing script: {e}")
+        logger.error(f"Error analyzing script: {e}")
         raise
 
 if __name__ == "__main__":
     try:
         result = analyze_script()
-        
-        print(f"\n📊 ENTITY ANALYSIS COMPLETE")
-        print(f"\n🎯 Topic: {result['topic']}")
-        print(f"\n🌍 Countries: {', '.join(result['countries']) if result['countries'] else 'None'}")
-        print(f"👤 Mathematicians: {', '.join(result['mathematicians']) if result['mathematicians'] else 'None'}")
-        print(f"📐 Formulas: {', '.join(result['formulas']) if result['formulas'] else 'None'}")
-        print(f"🎨 Concepts: {', '.join(result['concepts']) if result['concepts'] else 'None'}")
-        print(f"\n🖼️  Images Found: {len(result['images'])}")
-        
-        if result['images']:
-            print("\n📸 Available Images:")
-            for name, data in result['images'].items():
-                print(f"  • {data['type']}: {name}")
-        
-        print(f"\n{'✅ Rich content available!' if result['has_rich_content'] else '⚠️  No images found - will use abstract animations'}")
-        
+        # ASCII-only minimal console output to avoid encoding issues
+        print("\nEntity analysis complete")
+        print("Entities saved to: output/entities.json")
+        print(f"Images found: {len(result['images'])}")
+        print(f"Rich content available: {'Yes' if result['has_rich_content'] else 'No'}")
     except Exception as e:
         logger.error(f"Failed to analyze script: {e}")
         exit(1)
