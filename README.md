@@ -9,15 +9,22 @@ Create short, engaging math videos automatically using Wikipedia + AI scripts + 
 ## 🚀 Quick Start (Windows)
 
 ```powershell
-# Install dependencies
+# 1) Install dependencies
 pip install -r requirements.txt
 
-# Generate one dynamic video
-python generate_bulk.py 1
-
-# Or run the API server and trigger a render
+# 2) Start the API server (opens on http://127.0.0.1:8000)
 python server.py
+
+# 3) In another PowerShell window, trigger a render
 Invoke-RestMethod -Uri http://127.0.0.1:8000/run-animation -Method POST
+
+# Optional: discover topics (free)
+Invoke-RestMethod -Uri "http://127.0.0.1:8000/topics/suggest?source=wikipedia&query=graph%20theory&limit=5"
+
+# Optional: generate a script (free fallbacks)
+Invoke-RestMethod -Uri http://127.0.0.1:8000/scripts/generate -Method POST -Body (@{
+  topic = "Four color theorem"; provider = "auto"; max_words = 120
+} | ConvertTo-Json) -ContentType "application/json"
 ```
 
 Videos are saved to `output/videos/` (audio and videos are ignored by git).
@@ -136,33 +143,6 @@ Invoke-RestMethod -Uri http://127.0.0.1:8000/generate-bulk-videos -Method POST
 
 ---
 
-## 🎨 Features
-
-### ✨ Smart & DYNAMIC Content
-- **45+ curated math topics** (Pythagoras, Fibonacci, Pi, etc.)
-- **Topic-specific animations**: 
-  - Pascal's Triangle: Builds row by row with number highlighting
-  - Fibonacci: Shows sequence building + golden spiral
-  - Pythagorean theorem: Visual proof with squares
-  - Pi: Circle with circumference unwrapping
-  - Euler's identity: Highlighted equation parts
-  - And more custom animations for each topic!
-- **Engaging narration** with hooks & CTAs
-- **NOT just static symbols** - Real educational animations!
-
-### 📱 YouTube Shorts Optimized
-- Vertical format (1080x1920)
-- 60fps smooth animations
-- Topic displayed prominently
-- 30-45 second duration
-
-### 🤖 Fully Automated
-- One command → complete video
-- No API costs (offline TTS)
-- Scalable to 100s of videos
-
----
-
 ## 📈 Batch Generation
 
 ```powershell
@@ -250,6 +230,24 @@ Invoke-RestMethod -Uri http://127.0.0.1:8000/status
 Invoke-RestMethod -Uri http://127.0.0.1:8000/run-animation -Method POST
 ```
 
+### Suggest Topics (free)
+- Wikipedia
+```powershell
+Invoke-RestMethod -Uri "http://127.0.0.1:8000/topics/suggest?source=wikipedia&query=linear%20algebra&limit=5"
+```
+- arXiv (recent submissions by category)
+```powershell
+Invoke-RestMethod -Uri "http://127.0.0.1:8000/topics/suggest?source=arxiv&arxiv_category=math.CO&limit=5"
+```
+
+### Generate Script (free fallbacks)
+Provider priority: requested provider → Ollama (if running) → Transformers (if installed) → Wikipedia-only fallback.
+```powershell
+Invoke-RestMethod -Uri http://127.0.0.1:8000/scripts/generate -Method POST -Body (@{
+  topic = "Euler's identity"; provider = "auto"; max_words = 140
+} | ConvertTo-Json) -ContentType "application/json"
+```
+
 ### Generate Bulk Videos (NEW!)
 ```powershell
 Invoke-RestMethod -Uri http://127.0.0.1:8000/generate-bulk-videos -Method POST -Body (@{
@@ -271,9 +269,11 @@ Invoke-RestMethod -Uri http://127.0.0.1:8000/generate-bulk-videos -Method POST -
 }
 ```
 
-### Original Generate Video Endpoint
+### Autonomous Generation (experimental)
 ```powershell
-Invoke-RestMethod -Uri http://127.0.0.1:8000/run-animation -Method POST
+Invoke-RestMethod -Uri http://127.0.0.1:8000/auto-generate-videos -Method POST -Body (@{
+  count = 5; topic = "mathematics"; backend = "manim"; enhance_scripts = $true
+} | ConvertTo-Json) -ContentType "application/json"
 ```
 
 ---

@@ -16,6 +16,7 @@ import json
 from pathlib import Path
 from datetime import datetime
 import requests
+import sys
 
 # Optional imports guarded at runtime
 try:
@@ -136,15 +137,24 @@ def run_animation():
         category = topic_data.get("category", "Unknown")
         logger.info(f"Topic: {topic} (Category: {category})")
 
-        # Step 2: Generate AI-powered script using Ollama
-        logger.info("Step 2/7: Generating AI script with Ollama...")
+        # Step 2: Generate AI-powered script
+        # Prefer Ollama script if available, otherwise fallback to local generator
+        logger.info("Step 2/7: Generating AI script...")
+        script_cmd = None
+        if Path("scripts/generate_script_ollama.py").exists():
+            script_cmd = [sys.executable, "scripts/generate_script_ollama.py"]
+            logger.info("Using Ollama-based script generator")
+        else:
+            script_cmd = [sys.executable, "scripts/generate_script.py"]
+            logger.info("Using local script generator")
+
         result = subprocess.run(
-            ["python", "scripts/generate_script_ollama.py"],
+            script_cmd,
             check=True,
             capture_output=True,
             text=True
         )
-        logger.info("✅ AI script generated successfully")
+        logger.info("✅ Script generated successfully")
 
         # Step 3: Analyze script for entities (countries, people, formulas)
         logger.info("Step 3/7: Analyzing script for entities (countries, people, formulas)...")
