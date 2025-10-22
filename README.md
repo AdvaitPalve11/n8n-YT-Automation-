@@ -248,6 +248,13 @@ Invoke-RestMethod -Uri http://127.0.0.1:8000/scripts/generate -Method POST -Body
 } | ConvertTo-Json) -ContentType "application/json"
 ```
 
+Using your local Ollama with Qwen (preferred if installed):
+```powershell
+Invoke-RestMethod -Uri http://127.0.0.1:8000/scripts/generate -Method POST -Body (@{
+  topic = "Four color theorem"; provider = "ollama"; model = "qwen3:4b"; max_words = 140
+} | ConvertTo-Json) -ContentType "application/json"
+```
+
 ### Generate Bulk Videos (NEW)
 ```powershell
 Invoke-RestMethod -Uri http://127.0.0.1:8000/generate-bulk-videos -Method POST -Body (@{

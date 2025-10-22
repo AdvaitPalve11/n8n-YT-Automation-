@@ -484,6 +484,34 @@ def fetch_wikipedia_summary(topic: str) -> str:
         return topic
 
 
+def _pick_ollama_model(preferred: str | None = None) -> str:
+    """Pick a local Ollama model, preferring Qwen if available.
+
+    Order of preference:
+    - preferred (if provided and available)
+    - qwen3:4b, qwen2.5:4b, qwen2.5:7b (first available)
+    - llama3.1
+    """
+    try:
+        resp = requests.get("http://127.0.0.1:11434/api/tags", timeout=1)
+        tags = resp.json().get("models", []) if resp.status_code == 200 else []
+        have = {m.get("name", "").lower() for m in tags}
+    except Exception:
+        have = set()
+
+    # If user specified preferred and it's present, use it
+    if preferred and preferred.lower() in have:
+        return preferred
+
+    # Try Qwen variants by preference
+    for cand in ["qwen3:4b", "qwen2.5:4b", "qwen2.5:7b"]:
+        if cand in have:
+            return cand
+
+    # Fallback
+    return "llama3.1"
+
+
 def try_ollama_generate(topic: str, context: str, model: str | None, max_words: int) -> str | None:
     # Check Ollama locally (no key). If not running, return None
     try:
@@ -494,7 +522,7 @@ def try_ollama_generate(topic: str, context: str, model: str | None, max_words: 
         return None
 
     payload = {
-        "model": model or "llama3.1",
+        "model": _pick_ollama_model(model),
         "prompt": (
             f"Write an engaging ~{max_words}-word educational script about {topic}.\n\n"
             f"Context: {context[:800]}\n\n"
